@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Pokemon Search</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        
+        <script type="module" src="function.js" defer></script>
+    </head>
+    <body>
+            <main>
+                <div class="wrapper">
+                    <h1>Search Pokemon</h1>
+                    <div class="container main-container">
+                                <div class="container search-input-container">
+                                    <input id="searchInput" type="text" placeholder="Search...">
+                                    <button id="searchButton">Search</button>
+                                </div>
+                        
+                            <div class="container filter-container">
+                                    <h1>Filter Result</h1>
+                                   
+                                        <div class="checkbox-container"> 
+                                            <input id="skill" type="checkbox" value="Skill">
+                                            <label for="skill">Skill</label>
+                                        </div>
+    
+                                        <div class="checkbox-container"> 
+                                            <input id="name" type="checkbox" value="name">
+                                            <label for="name">Name</label>
+                                        </div>
+    
+                                        <div class="checkbox-container"> 
+                                            <input id="evolve" title="evolve" type="checkbox" value="evolve">
+                                            <label for="evolve">Evolve</label>
+                                        </div>
+                                        
+                                        <div class="checkbox-container"> 
+                                            <input id="type" type="checkbox" value="type">
+                                            <label for="type">Type</label>
+                                        </div>
+                             </div>
+                    </div>
+                    <div class="container result-container">
+                        <h1 id="displayResult">Result</h1>
+                    </div>
+                </div>
+            </main>
+    </body>
+</html>
