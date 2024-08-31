@@ -27,12 +27,15 @@ function checkFilter(){
         clearDisplay(()=>fetchData(filterIndicator));
         
     }
+    else{
+        resultDisplay.textContent='Please Choose in The Filter Result';
+    }
        
 }
 function clearDisplay(callback){
     const allDisplay =document.querySelectorAll('.display');
     allDisplay.forEach(display=>display.textContent="");
-    resultDisplay.src='';
+    resultImage.src='';
     callback();
 }
 function fetchData(checkboxes){
@@ -43,22 +46,26 @@ function fetchData(checkboxes){
                     resultImage.src= value.sprites.front_default;
                     console.log(value);
                     checkboxes.forEach((checkBox,index)=>{
-                        switch(index+1){
+                        switch(checkBox+1){
                             case 1:
                                 const displaySkill = document.getElementById('displaySkill');
+                                displaySkill.textContent="SKILL:";
                                         value.abilities.forEach((ability,index)=>{
                                             displaySkill.textContent+=value.abilities.length-1>index?ability.ability.name+",":ability.ability.name;
                                         });
                                 break;
                             case 2:
                                 const displayName = document.getElementById('displayName');
-                                        displayName.textContent = value.name;
+                                displayName.textContent="NAME:";
+                                        displayName.textContent+= value.name;
                                 break;
                             case 3:
                                 const displayEvolve = document.getElementById('displayEvolve');
+                                displayEvolve.textContent="EVOLVE:";
                                 break;
                             case 4:
                                 const displayType = document.getElementById('displayType');
+                                displayType.textContent="TYPE:";
                                         value.types.forEach((type, index)=>{
                                             displayType.textContent+=value.types.length-1>index?type.type.name+",":type.type.name;
                                         });
