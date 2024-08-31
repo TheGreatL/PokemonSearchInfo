@@ -1,6 +1,8 @@
 const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
 const resultDisplay = document.getElementById('displayResult');
+const resultImage = document.getElementById('pokemonImage');
+
 const api_link ='https://pokeapi.co/api/v2/pokemon/';
 let searchLink;
 searchButton.addEventListener('click',(event)=>{
@@ -14,85 +16,65 @@ function checkFilter(){
     resultDisplay.textContent="";
     
     const checkBoxes= document.querySelectorAll('input[type=checkbox]');
+    let filterIndicator =[];
     checkBoxes.forEach((checkbox,index)=>{
-        if(checkbox.checked){
-
-            searchLink= api_link+searchInput.value;
-            fetchData(index+1);
-        }
+        if(checkbox.checked)
+            filterIndicator.push(index);
+        
     });
-    // if(isAllChecked){
-    //     resultDisplay.textContent="All Checked";
-    //     searchLink= api_link+searchInput.value;
-    //     fetchData();
-    // }
+    if(filterIndicator.length >0){
+        searchLink= api_link+searchInput.value.toLowerCase();
+        clearDisplay(()=>fetchData(filterIndicator));
+        
+    }
        
 }
-function fetchData(checkbox){
+function clearDisplay(callback){
+    const allDisplay =document.querySelectorAll('.display');
+    allDisplay.forEach(display=>display.textContent="");
+    resultDisplay.src='';
+    callback();
+}
+function fetchData(checkboxes){
+ 
+        fetch(searchLink)
+        .then(response=>response.json())
+        .then(value=>{
+                    resultImage.src= value.sprites.front_default;
+                    console.log(value);
+                    checkboxes.forEach((checkBox,index)=>{
+                        switch(index+1){
+                            case 1:
+                                const displaySkill = document.getElementById('displaySkill');
+                                        value.abilities.forEach((ability,index)=>{
+                                            displaySkill.textContent+=value.abilities.length-1>index?ability.ability.name+",":ability.ability.name;
+                                        });
+                                break;
+                            case 2:
+                                const displayName = document.getElementById('displayName');
+                                        displayName.textContent = value.name;
+                                break;
+                            case 3:
+                                const displayEvolve = document.getElementById('displayEvolve');
+                                break;
+                            case 4:
+                                const displayType = document.getElementById('displayType');
+                                        value.types.forEach((type, index)=>{
+                                            displayType.textContent+=value.types.length-1>index?type.type.name+",":type.type.name;
+                                        });
+                                break;
+                        }
 
-    switch(checkbox){
-        case 1:
-            
-            fetch(searchLink)
-            .then(response=>response.json())
-            .then(value=>
-                {
-                    resultDisplay.textContent+="Abilities:";
-                    value.abilities.forEach((val,index)=>
-                    {
-                resultDisplay.textContent+=index==(value.abilities.length-1)?val.ability.name:val.ability.name+",";
-                // console.log(val.ability);
-            });
-        
-            })
-            .catch((error)=>{resultDisplay.textContent="We cannot find your input";console.error(error)});
-        
-            break;
-        case 2:
-            resultDisplay.textContent+="Name:";
-            fetch(searchLink)
-            .then(response=>response.json())
-            .then(value=>
-                {value.abilities.forEach((val,index)=>
-                    {
-                resultDisplay.textContent+=index==(value.abilities.length-1)?val.ability.name+"\n":val.ability.name+",";
-                // console.log(val.ability);
-            });
-        
-            })
-            .catch((error)=>{resultDisplay.textContent="We cannot find your input";console.error(error)});
-        
-            break;
-        case 3:
-            resultDisplay.textContent+="Evolve/s:";
-            fetch(searchLink)
-            .then(response=>response.json())
-            .then(value=>
-                {value.abilities.forEach((val,index)=>
-                    {
-                resultDisplay.textContent+=index==(value.abilities.length-1)?val.ability.name+"\n":val.ability.name+",";
-                // console.log(val.ability);
-            });
-        
-            })
-            .catch((error)=>{resultDisplay.textContent="We cannot find your input";console.error(error)});
-        
-            break;
-        
-        case 4:
-            
-            fetch(searchLink)
-            .then(response=>response.json())
-            .then(value=>{
-                resultDisplay.textContent+="\nType:";
-                    value.types.forEach((val,index)=>{
-                    resultDisplay.textContent+=index==(value.types.length-1)?val.type.name:val.type.name+",";            
+
                     });
-            })
-            .catch((error)=>{resultDisplay.textContent="We cannot find your input";console.error(error)});
-        
-            break;
-                    
-                
-    }
+
+
+
+
+
+
+                })
+        .catch(error=>{
+                resultDisplay.textContent="Your input is not valid";
+        });
 }
