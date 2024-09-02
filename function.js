@@ -2,86 +2,92 @@ const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
 const resultDisplay = document.getElementById('displayResult');
 const resultImage = document.getElementById('pokemonImage');
+const results = document.querySelectorAll('.display');
+const API_LINK = 'https://pokeapi.co/api/v2/pokemon/';
+searchButton.addEventListener('click',()=>{
 
-const api_link ='https://pokeapi.co/api/v2/pokemon/';
-let searchLink;
-searchButton.addEventListener('click',(event)=>{
-    if(searchInput.value==""){
-            resultDisplay.textContent="Your input is not valid.\nTry Again"; 
+        const results = document.querySelectorAll('.display');
+        results.forEach(result=>{
+            result.textContent='';
+        });
+        resultImage.src='';
+        //If Empty Go Here
+        if(!searchInput.value){
+            resultDisplay.textContent='Don`t leave field empty';
             return;
         }
-    checkFilter();
-});
-function checkFilter(){
-    resultDisplay.textContent="";
-    
-    const checkBoxes= document.querySelectorAll('input[type=checkbox]');
-    let filterIndicator =[];
-    checkBoxes.forEach((checkbox,index)=>{
-        if(checkbox.checked)
-            filterIndicator.push(index);
+
+     
         
-    });
-    if(filterIndicator.length >0){
-        searchLink= api_link+searchInput.value.toLowerCase();
-        clearDisplay(()=>fetchData(filterIndicator));
-        
-    }
-    else{
-        resultDisplay.textContent='Please Choose in The Filter Result';
-    }
-       
-}
-function clearDisplay(callback){
-    const allDisplay =document.querySelectorAll('.display');
-    allDisplay.forEach(display=>display.textContent="");
-    resultImage.src='';
-    callback();
-}
-function fetchData(checkboxes){
- 
-        fetch(searchLink)
-        .then(response=>response.json())
-        .then(value=>{
-                    resultImage.src= value.sprites.front_default;
-                    console.log(value);
-                    checkboxes.forEach((checkBox,index)=>{
-                        switch(checkBox+1){
-                            case 1:
-                                const displaySkill = document.getElementById('displaySkill');
-                                displaySkill.textContent="SKILL:";
-                                        value.abilities.forEach((ability,index)=>{
-                                            displaySkill.textContent+=value.abilities.length-1>index?ability.ability.name+",":ability.ability.name;
-                                        });
-                                break;
-                            case 2:
-                                const displayName = document.getElementById('displayName');
-                                displayName.textContent="NAME:";
-                                        displayName.textContent+= value.name;
-                                break;
-                            case 3:
-                                const displayEvolve = document.getElementById('displayEvolve');
-                                displayEvolve.textContent="EVOLVE:";
-                                break;
-                            case 4:
-                                const displayType = document.getElementById('displayType');
-                                displayType.textContent="TYPE:";
-                                        value.types.forEach((type, index)=>{
-                                            displayType.textContent+=value.types.length-1>index?type.type.name+",":type.type.name;
-                                        });
-                                break;
-                        }
-
-
-                    });
-
-
-
-
-
-
-                })
-        .catch(error=>{
-                resultDisplay.textContent="Your input is not valid";
+        const checkedCheckBox=[];
+        const checkBoxes  = document.querySelectorAll('input[type=checkbox]');
+        checkBoxes.forEach((checkbox,index)=>{
+                if(checkbox.checked){
+                        checkedCheckBox.push(index);
+                }
         });
+
+        if(!checkedCheckBox.length){
+            resultDisplay.textContent='Please check at lease one checkbox';
+            return;
+        }
+        displayData(checkedCheckBox,searchInput.value.toLowerCase());
+
+});
+ function displayData(checkedCheckBox,searchInput){
+    fetch(API_LINK+searchInput)
+    .then(response=>{
+
+        if(!response.ok){
+            throw new Error("Your input is not valid");
+        }
+
+        return response.json();
+    })
+    .then(responseData=>{
+        console.log(responseData);
+            const {
+                  name:pokemonName,
+                  abilities:[
+                    {
+                        ability:{name:abilityName1}
+                    },
+                    {ability:
+                        {
+                            name:abilityName2
+                        }
+                    }
+                ],
+                sprites:{front_default:pokemonIcon}
+             
+            }=responseData;
+
+            resultImage.src = pokemonIcon;
+            for(let check of checkedCheckBox){
+                switch(check){
+                    case 0:
+                        results[check].textContent = `Abilities:${abilityName1}, ${abilityName2}`;
+                        break;
+                    case 1:
+                        results[check].textContent = `Name:${pokemonName}`;
+                        break;
+                    case 2:
+                        results[check].textContent = `Evolve:`;
+                        break;
+                    case 3:
+                        let typesData='';
+                        responseData.types.forEach(typesArr=>{
+                            typesData+=`${typesArr.type.name}, `;
+                        });
+                        results[check].textContent = `Type:${typesData}`;
+                        break;
+                }      
+            }
+         
+          
+           
+        })
+    .catch(error=>{
+        resultDisplay.textContent=error;
+    });
 }

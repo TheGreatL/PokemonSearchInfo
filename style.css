@@ -10,6 +10,7 @@ main{
     display: flex;
     background-color: aqua;
     height: 100vh;
+    padding: 5rem;
 
 }
 .wrapper{
